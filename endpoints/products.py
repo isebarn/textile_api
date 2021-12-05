@@ -24,8 +24,11 @@ api = Api(app)
 
 api = Namespace("products", description="")
 
+oid = api.model("base", {"_id": String(attribute=lambda x: str(x["_id"]))})
+
 product_variant_feature = api.clone(
     "product_variant_feature",
+    oid,
     {
         "feature": String,
         "details": String,
@@ -34,6 +37,7 @@ product_variant_feature = api.clone(
 
 product_variant = api.clone(
     "product_variant",
+    oid,
     {
         "item_description_line_1": String,
         "item_description_line_2": String,
@@ -45,6 +49,7 @@ product_variant = api.clone(
 
 image = api.clone(
     "image",
+    oid,
     {
         "url": String,
         "caption": String,
@@ -53,6 +58,7 @@ image = api.clone(
 
 product = api.clone(
     "Product",
+    oid,
     {
         "name": String,
         "detail": String,
