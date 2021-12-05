@@ -5,31 +5,27 @@ env_file = ''
 ###env
 url = "http://127.0.0.1:5000/api/{}"
 images = "images"
-products = "products"
-users = "users"
+p = "products"
+pv = "product_variants"
+pvf = "product_variant_feature"
 ###env
 
-get(url.format(images))
+get("http://127.0.0.1:5000/products")
+get(url.format(p))
 
-post(url.format(images), json={
-	"url": "asd",
-	"fields": {
-		"god": 1
-	}
-}, name="image")
+post(url.format(p), json={
+	"name": "textile 1",
+	"detail": "some richtext"
+}, name="product")
 
+post(url.format(pv), json={
+	"item_description_line_1": "sample desc 1",
+	"item_description_line_2": "sample desc 2",
+	"product": "61acacf634af76057ab3f72f"
+})
 
-get(url.format(products))
-
-
-post(url.format(users), json={
-	"name": "John",
-	"birthday": "2021-01-01",
-	"age": 12,
-	"alive": True,
-	"facts": {
-		"fears": ["bees", "honey"],
-		"likes": ["beers", "honeys"],
-		"salary": 30000
-	}
+post(url.format(pvf), json={
+	"feature": "feature",
+	"details": "details",
+	"product_variant": "61acacfa34af76057ab3f730"
 })

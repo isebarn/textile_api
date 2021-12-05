@@ -29,6 +29,7 @@ db = connect(
     authentication_source="admin",
 )
 
+
 class Extended(Document):
     meta = {"abstract": True, "allow_inheritance": True}
 
@@ -134,6 +135,7 @@ class Extended(Document):
         ):
             pass
 
+
 class Inquiry(Extended):
     name = StringField()
     email = StringField()
@@ -141,30 +143,48 @@ class Inquiry(Extended):
     company_name = StringField()
     job_title = StringField()
     location = StringField()
+    details = StringField()
 
 
 class Product(Extended):
-    detail = DictField()
-    pricing = DictField()
+    name = StringField()
+    detail = StringField()
 
+
+class ProductVariant(Extended):
+    item_description_line_1 = StringField()
+    item_description_line_2 = StringField()
+    product = ReferenceField(Product)
+
+
+class ProductVariantFeature(Extended):
+    feature = StringField()
+    details = StringField()
+    product_variant = ReferenceField(ProductVariant)
+
+
+class Image(Extended):
+    url = StringField()
+    caption = StringField()
+    product = ReferenceField(Product)
 
 
 # def config():
-    # signals.pre_save.connect(Class.pre_save, sender=Class)
-    # signals.post_save.connect(Class.post_save, sender=Class)
+# signals.pre_save.connect(Class.pre_save, sender=Class)
+# signals.post_save.connect(Class.post_save, sender=Class)
 
-    # seed
-    # logging.info("Seeding database")
-    # seed = load(open("models/seed.json"))
+# seed
+# logging.info("Seeding database")
+# seed = load(open("models/seed.json"))
 
-    # helper method to remove "_id" and "_cls" so I can compare json objects
-    # from the db
-    # def remove_meta_from_dict_item(item):
-    #     item.pop("_cls")
-    #     item.pop("_id")
-    #     for key, value in item.items():
-    #         if isinstance(value, dict):
-    #             remove_meta_from_dict_item(value)
+# helper method to remove "_id" and "_cls" so I can compare json objects
+# from the db
+# def remove_meta_from_dict_item(item):
+#     item.pop("_cls")
+#     item.pop("_id")
+#     for key, value in item.items():
+#         if isinstance(value, dict):
+#             remove_meta_from_dict_item(value)
 
 
 # config()
