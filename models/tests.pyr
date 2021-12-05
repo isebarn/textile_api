@@ -8,6 +8,7 @@ images = "images"
 p = "products"
 pv = "product_variants"
 pvf = "product_variant_feature"
+pvf = "images"
 ###env
 
 get("http://127.0.0.1:5000/products")
@@ -28,4 +29,10 @@ post(url.format(pvf), json={
 	"feature": "feature",
 	"details": "details",
 	"product_variant": "61acacfa34af76057ab3f730"
+})
+
+post(url.format(images), json={
+	"url": "image url",
+	"caption": "description",
+	"product_variant": "61acacf634af76057ab3f72f"
 })

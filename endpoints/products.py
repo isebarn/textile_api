@@ -29,11 +29,13 @@ api = Namespace("products", description="")
 class ProductsController(Resource):
     def get(self):
         products = models.Product.get()
+        images = models.Image.get()
         product_variants = models.ProductVariant.get()
         product_variant_features = models.ProductVariantFeature.get()
 
         for product in products:
             product["product_variants"] = []
+            product["images"] = []
 
         for product_variant in product_variants:
             product_variant["product_variant_features"] = []
@@ -72,5 +74,20 @@ class ProductsController(Resource):
 
             product_variant.pop("product")
             product["product_variants"].append(product_variant)
+
+        for image in images:
+            product_id = image.get("product", {}).get("_id", {}).get("$oid")
+            if not product_id:
+                continue
+
+            product = next(
+                filter(lambda x: x["_id"]["$oid"] == product_id, products), None
+            )
+
+            if not product:
+                continue
+
+            image.pop("product")
+            product["images"].append(image)
 
         return products
