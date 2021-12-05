@@ -24,70 +24,85 @@ api = Api(app)
 
 api = Namespace("products", description="")
 
+product_variant_feature = api.clone(
+    "product_variant_feature",
+    {
+        "feature": String,
+        "details": String,
+    },
+)
+
+product_variant = api.clone(
+    "product_variant",
+    {
+        "item_description_line_1": String,
+        "item_description_line_2": String,
+        "product_variant_features": List(
+            Nested(api.models.get("product_variant_feature"))
+        ),
+    },
+)
+
+image = api.clone(
+    "image",
+    {
+        "url": String,
+        "caption": String,
+    },
+)
+
+product = api.clone(
+    "Product",
+    {
+        "name": String,
+        "detail": String,
+        "product_variants": List(Nested(api.models.get("product_variant"))),
+        "image": List(Nested(api.models.get("image"))),
+    },
+)
+
 
 @api.route("/")
 class ProductsController(Resource):
+    @api.marshal_list_with(product)
     def get(self):
-        products = models.Product.get()
-        images = models.Image.get()
-        product_variants = models.ProductVariant.get()
-        product_variant_features = models.ProductVariantFeature.get()
-
-        for product in products:
-            product["product_variants"] = []
-            product["images"] = []
-
-        for product_variant in product_variants:
-            product_variant["product_variant_features"] = []
-
-        for pvf in product_variant_features:
-            product_variant_id = (
-                pvf.get("product_variant", {}).get("_id", {}).get("$oid")
+        return list(
+            models.Product.objects.aggregate(
+                [
+                    {
+                        "$lookup": {
+                            "as": "product_variants",
+                            "foreignField": "product",
+                            "from": "product_variant",
+                            "localField": "_id",
+                        }
+                    },
+                    {"$unwind": "$product_variants"},
+                    {
+                        "$lookup": {
+                            "as": "product_variants.product_variant_features",
+                            "foreignField": "product_variant",
+                            "from": "product_variant_feature",
+                            "localField": "product_variants._id",
+                        }
+                    },
+                    {
+                        "$lookup": {
+                            "as": "image",
+                            "foreignField": "product",
+                            "from": "image",
+                            "localField": "_id",
+                        }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$_id",
+                            "detail": {"$first": "$detail"},
+                            "image": {"$first": "$image"},
+                            "name": {"$first": "$name"},
+                            "product_variants": {"$push": "$product_variants"},
+                        }
+                    },
+                ]
             )
-
-            if not product_variant_id:
-                continue
-
-            product_variant = next(
-                filter(
-                    lambda x: x["_id"]["$oid"] == product_variant_id, product_variants
-                ),
-                None,
-            )
-
-            if not product_variant:
-                continue
-
-            pvf.pop("product_variant")
-            product_variant["product_variant_features"].append(pvf)
-
-        for product_variant in product_variants:
-            product_id = product_variant.get("product", {}).get("_id", {}).get("$oid")
-            if not product_id:
-                continue
-
-            product = next(
-                filter(lambda x: x["_id"]["$oid"] == product_id, products), None
-            )
-            if not product:
-                continue
-
-            product_variant.pop("product")
-            product["product_variants"].append(product_variant)
-
-        for image in images:
-            product_id = image.get("product", {}).get("_id", {}).get("$oid")
-            if not product_id:
-                continue
-
-            product = next(
-                filter(lambda x: x["_id"]["$oid"] == product_id, products), None
-            )
-
-            if not product:
-                continue
-
-            image.pop("product")
-            product["images"].append(image)
-
-        return products
+        )
