@@ -152,6 +152,7 @@ class Product(Extended):
 
 
 class ProductVariant(Extended):
+    name = StringField()
     item_description_line_1 = StringField()
     item_description_line_2 = StringField()
     product = ReferenceField(Product)
