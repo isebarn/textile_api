@@ -41,6 +41,7 @@ product_variant = api.clone(
     {
         "item_description_line_1": String,
         "item_description_line_2": String,
+        "name": String,
         "product_variant_features": List(
             Nested(api.models.get("product_variant_feature"))
         ),
