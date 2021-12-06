@@ -111,6 +111,7 @@ class ProductsController(Resource):
                             "product_variants": {"$push": "$product_variants"},
                         }
                     },
+                    {"$sort": {"_id": 1}}
                 ]
             )
         )
