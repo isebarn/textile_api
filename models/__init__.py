@@ -13,6 +13,7 @@ from mongoengine import Document
 from mongoengine import FloatField
 from mongoengine import BooleanField
 from mongoengine import ReferenceField
+from mongoengine import ListField
 from mongoengine import StringField
 from mongoengine import DictField
 from mongoengine import signals
@@ -28,7 +29,6 @@ db = connect(
     host=host,
     authentication_source="admin",
 )
-
 
 class Extended(Document):
     meta = {"abstract": True, "allow_inheritance": True}
@@ -135,6 +135,10 @@ class Extended(Document):
         ):
             pass
 
+class Image(Extended):
+    url = StringField()
+    caption = StringField()
+
 
 class Inquiry(Extended):
     name = StringField()
@@ -146,46 +150,42 @@ class Inquiry(Extended):
     details = StringField()
 
 
-class Product(Extended):
-    name = StringField()
-    detail = StringField()
+class Feature(Extended):
+    feature = StringField()
+    details = StringField()
 
 
-class ProductVariant(Extended):
+class Variant(Extended):
     name = StringField()
     item_description_line_1 = StringField()
     item_description_line_2 = StringField()
-    product = ReferenceField(Product)
+    features = ListField(ReferenceField(Feature))
 
 
-class ProductVariantFeature(Extended):
-    feature = StringField()
-    details = StringField()
-    product_variant = ReferenceField(ProductVariant)
+class Product(Extended):
+    name = StringField()
+    detail = StringField()
+    images = ListField(ReferenceField(Image))
+    variants = ListField(ReferenceField(Variant))
 
-
-class Image(Extended):
-    url = StringField()
-    caption = StringField()
-    product = ReferenceField(Product)
 
 
 # def config():
-# signals.pre_save.connect(Class.pre_save, sender=Class)
-# signals.post_save.connect(Class.post_save, sender=Class)
+    # signals.pre_save.connect(Class.pre_save, sender=Class)
+    # signals.post_save.connect(Class.post_save, sender=Class)
 
-# seed
-# logging.info("Seeding database")
-# seed = load(open("models/seed.json"))
+    # seed
+    # logging.info("Seeding database")
+    # seed = load(open("models/seed.json"))
 
-# helper method to remove "_id" and "_cls" so I can compare json objects
-# from the db
-# def remove_meta_from_dict_item(item):
-#     item.pop("_cls")
-#     item.pop("_id")
-#     for key, value in item.items():
-#         if isinstance(value, dict):
-#             remove_meta_from_dict_item(value)
+    # helper method to remove "_id" and "_cls" so I can compare json objects
+    # from the db
+    # def remove_meta_from_dict_item(item):
+    #     item.pop("_cls")
+    #     item.pop("_id")
+    #     for key, value in item.items():
+    #         if isinstance(value, dict):
+    #             remove_meta_from_dict_item(value)
 
 
 # config()
