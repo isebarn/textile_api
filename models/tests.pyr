@@ -11,7 +11,7 @@ pvf = "product_variant_feature"
 images = "images"
 ###env
 
-#get("http://127.0.0.1:5000/products")
+get("http://127.0.0.1:5000/products")
 #get(url.format(p))
 
 post(url.format(p), json={
@@ -32,8 +32,8 @@ post(url.format(pv), json={
 }, name="pvA")
 
 post(url.format(pv), json={
-	"item_description_line_1": "sample desc B",
-	"item_description_line_2": "sample desc B",
+	"item_description_line_1": "Asample desc B",
+	"item_description_line_2": "Asample desc B",
 	"product": product.json()["_id"]["$oid"]
 }, name="pvB")
 
