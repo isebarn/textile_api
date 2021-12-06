@@ -92,6 +92,7 @@ class ProductsController(Resource):
                             "localField": "product_variants._id",
                         }
                     },
+                    {"$sort": {"product_variants.item_description_line_1": 1}},
                     {
                         "$lookup": {
                             "as": "image",
@@ -100,6 +101,7 @@ class ProductsController(Resource):
                             "localField": "_id",
                         }
                     },
+                    {"$sort": {"product_variants.product_variant_features._id": 1}},
                     {
                         "$group": {
                             "_id": "$_id",
