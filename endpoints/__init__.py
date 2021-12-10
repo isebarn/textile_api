@@ -24,51 +24,66 @@ api = Api(app)
 
 api = Namespace("api", description="")
 
-oid = api.model("oid", { "$oid": String})
-base = api.model("base", {
-    "_cls": String,
-    "_id": Nested(oid)
-})
+oid = api.model("oid", {"$oid": String})
+base = api.model("base", {"_cls": String, "_id": Nested(oid)})
 
-image = api.clone('Image', base, {
-    'url': String,
-    'caption': String,
-})
+image = api.clone(
+    "Image",
+    base,
+    {
+        "url": String,
+        "caption": String,
+    },
+)
 
-inquiry = api.clone('Inquiry', base, {
-    'name': String,
-    'email': String,
-    'phone_number': String,
-    'company_name': String,
-    'job_title': String,
-    'location': String,
-    'details': String,
-})
+inquiry = api.clone(
+    "Inquiry",
+    base,
+    {
+        "name": String,
+        "email": String,
+        "phone_number": String,
+        "company_name": String,
+        "job_title": String,
+        "location": String,
+        "details": String,
+    },
+)
 
-feature = api.clone('Feature', base, {
-    'feature': String,
-    'details': String,
-})
+feature = api.clone(
+    "Feature",
+    base,
+    {
+        "feature": String,
+        "details": String,
+    },
+)
 
-variant = api.clone('Variant', base, {
-    'name': String,
-    'item_description_line_1': String,
-    'item_description_line_2': String,
-    'features': List(Nested(feature)),
-})
+variant = api.clone(
+    "Variant",
+    base,
+    {
+        "name": String,
+        "item_description_line_1": String,
+        "item_description_line_2": String,
+        "features": List(Nested(feature)),
+    },
+)
 
-product = api.clone('Product', base, {
-    'name': String,
-    'detail': String,
-    'images': List(Nested(image)),
-    'variants': List(Nested(variant)),
-})
-
+product = api.clone(
+    "Product",
+    base,
+    {
+        "name": String,
+        "detail": String,
+        "images": List(Nested(image)),
+        "variants": List(Nested(variant)),
+    },
+)
 
 
 @api.route("/images")
 class ImagesController(Resource):
-
     @api.marshal_list_with(image)
     def get(self):
         return models.Image.get(**request.args.to_dict())
@@ -81,9 +96,9 @@ class ImagesController(Resource):
     def patch(self):
         return models.Image.set(**request.get_json()).to_json()
 
+
 @api.route("/inquiries")
 class InquiriesController(Resource):
-
     @api.marshal_list_with(inquiry)
     def get(self):
         return models.Inquiry.get(**request.args.to_dict())
@@ -96,9 +111,9 @@ class InquiriesController(Resource):
     def patch(self):
         return models.Inquiry.set(**request.get_json()).to_json()
 
+
 @api.route("/features")
 class FeaturesController(Resource):
-
     @api.marshal_list_with(feature)
     def get(self):
         return models.Feature.get(**request.args.to_dict())
@@ -111,9 +126,9 @@ class FeaturesController(Resource):
     def patch(self):
         return models.Feature.set(**request.get_json()).to_json()
 
+
 @api.route("/variants")
 class VariantsController(Resource):
-
     @api.marshal_list_with(variant)
     def get(self):
         return models.Variant.get(**request.args.to_dict())
@@ -126,9 +141,9 @@ class VariantsController(Resource):
     def patch(self):
         return models.Variant.set(**request.get_json()).to_json()
 
+
 @api.route("/products")
 class ProductsController(Resource):
-
     @api.marshal_list_with(product)
     def get(self):
         return models.Product.get(**request.args.to_dict())
@@ -141,3 +156,6 @@ class ProductsController(Resource):
     def patch(self):
         return models.Product.set(**request.get_json()).to_json()
 
+    def delete(self):
+        item = models.Product(id=request.get_json()["_id"]["$oid"])
+        item.delete()
