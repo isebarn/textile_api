@@ -30,6 +30,7 @@ db = connect(
     authentication_source="admin",
 )
 
+
 class Extended(Document):
     meta = {"abstract": True, "allow_inheritance": True}
 
@@ -85,6 +86,11 @@ class Extended(Document):
                 for key, value in self._fields.items()
                 if isinstance(value, ReferenceField) and getattr(self, key)
             },
+            **{
+                key: [x.to_json() for x in getattr(self, key)]
+                for key, value in self._fields.items()
+                if isinstance(value, ListField) and getattr(self, key)
+            },
         }
 
     @classmethod
@@ -92,9 +98,15 @@ class Extended(Document):
         _id = kwargs.pop("_id")
         item = cls.objects.get(id=_id["$oid"])
         for key, value in kwargs.items():
+            if isinstance(value, list) and any(value):
+                string_object_ids = [x.get("_id", {}).get("$oid") for x in value]
+                if all(map(lambda x: ObjectId.is_valid(x), string_object_ids)):
+                    value = [ObjectId(x) for x in string_object_ids]
+
             setattr(item, key, value)
 
         item.save()
+
         return cls.objects.get(id=_id["$oid"])
 
     @classmethod
@@ -135,6 +147,7 @@ class Extended(Document):
         ):
             pass
 
+
 class Image(Extended):
     url = StringField()
     caption = StringField()
@@ -169,23 +182,22 @@ class Product(Extended):
     variants = ListField(ReferenceField(Variant))
 
 
-
 # def config():
-    # signals.pre_save.connect(Class.pre_save, sender=Class)
-    # signals.post_save.connect(Class.post_save, sender=Class)
+# signals.pre_save.connect(Class.pre_save, sender=Class)
+# signals.post_save.connect(Class.post_save, sender=Class)
 
-    # seed
-    # logging.info("Seeding database")
-    # seed = load(open("models/seed.json"))
+# seed
+# logging.info("Seeding database")
+# seed = load(open("models/seed.json"))
 
-    # helper method to remove "_id" and "_cls" so I can compare json objects
-    # from the db
-    # def remove_meta_from_dict_item(item):
-    #     item.pop("_cls")
-    #     item.pop("_id")
-    #     for key, value in item.items():
-    #         if isinstance(value, dict):
-    #             remove_meta_from_dict_item(value)
+# helper method to remove "_id" and "_cls" so I can compare json objects
+# from the db
+# def remove_meta_from_dict_item(item):
+#     item.pop("_cls")
+#     item.pop("_id")
+#     for key, value in item.items():
+#         if isinstance(value, dict):
+#             remove_meta_from_dict_item(value)
 
 
 # config()

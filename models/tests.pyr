@@ -6,69 +6,54 @@ env_file = ''
 url = "http://127.0.0.1:5000/api/{}"
 images = "images"
 p = "products"
-pv = "product_variants"
-pvf = "product_variant_feature"
+v = "variants"
+f = "features"
 images = "images"
 ###env
 
-get("http://127.0.0.1:5000/products")
-#get(url.format(p))
+
+get(url.format(p))
+get(url.format(p))
+post(url.format(v), json={
+	"name": "name 1",
+	"item_description_line_1": "item_description_line_1 1",
+	"item_description_line_2": "item_description_line_2 1"	
+}, name="variant")
+
 
 post(url.format(p), json={
-	"name": "textile 1",
-	"detail": "some richtext"
-}, name="product")
-
-post(url.format(images), json={
-	"url": "image url",
-	"caption": "description",
-	"product": product.json()["_id"]["$oid"]
+	"name": "name",
+	"detail": "detail",
+	"variants": [
+		variant.json()
+	]
 })
 
-post(url.format(pv), json={
-	"item_description_line_1": "sample desc A",
-	"item_description_line_2": "sample desc A",
-	"product": product.json()["_id"]["$oid"]
-}, name="pvA")
 
-post(url.format(pv), json={
-	"item_description_line_1": "Asample desc B",
-	"item_description_line_2": "Asample desc B",
-	"product": product.json()["_id"]["$oid"]
-}, name="pvB")
+post(url.format(v), json={
+	"name": "name 1",
+	"item_description_line_1": "item_description_line_1 2",
+	"item_description_line_2": "item_description_line_2 2"	
+}, name="variant")
 
-post(url.format(pvf), json={
-	"feature": "feature Aa",
-	"details": "details Aa",
-	"product_variant": pvA.json()["_id"]["$oid"]
-})
-
-post(url.format(pvf), json={
-	"feature": "feature Ab",
-	"details": "details Ab",
-	"product_variant": pvA.json()["_id"]["$oid"]
-})
-
-post(url.format(pvf), json={
-	"feature": "feature Ac",
-	"details": "details Ac",
-	"product_variant": pvA.json()["_id"]["$oid"]
-})
-
-post(url.format(pvf), json={
-	"feature": "feature Ba",
-	"details": "details Ba",
-	"product_variant": pvB.json()["_id"]["$oid"]
-})
-
-post(url.format(pvf), json={
-	"feature": "feature Bb",
-	"details": "details Bb",
-	"product_variant": pvB.json()["_id"]["$oid"]
-})
-
-post(url.format(pvf), json={
-	"feature": "feature Bc",
-	"details": "details Bc",
-	"product_variant": pvB.json()["_id"]["$oid"]
+patch(url.format(p), json={
+  "_cls": "Product",
+  "_id": {
+    "$oid": "61b12011e05f2ab93fb9df49"
+  },
+  "detail": "detail",
+  "images": [],
+  "name": "name",
+  "variants": [
+		{
+		  "_cls": "Variant",
+		  "_id": {
+		    "$oid": "61b12021e05f2ab93fb9df4a"
+		  },
+		  "features": [],
+		  "item_description_line_1": "item_description_line_1 2",
+		  "item_description_line_2": "item_description_line_2 2",
+		  "name": "name 1"
+		}
+  ]
 })
