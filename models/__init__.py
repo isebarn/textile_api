@@ -87,11 +87,11 @@ class Extended(Document):
                 for key, value in self._fields.items()
                 if isinstance(value, ReferenceField) and getattr(self, key)
             },
-            # **{
-            #     key: [x.to_json() for x in getattr(self, key)]
-            #     for key, value in self._fields.items()
-            #     if isinstance(value, ListField) and getattr(self, key)
-            # },
+            **{
+                key: [x.to_json() for x in getattr(self, key)]
+                for key, value in self._fields.items()
+                if isinstance(value, ListField) and getattr(self, key)
+            },
         }
 
     @classmethod
