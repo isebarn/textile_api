@@ -47,6 +47,8 @@ inquiry = api.clone(
         "job_title": String,
         "location": String,
         "details": String,
+        "status": String,
+        "created_on": String
     },
 )
 

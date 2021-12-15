@@ -162,7 +162,8 @@ class Inquiry(Extended):
     job_title = StringField()
     location = StringField()
     details = StringField()
-
+    status = StringField()
+    created_on = StringField()
 
 class Feature(Extended):
     feature = StringField()
