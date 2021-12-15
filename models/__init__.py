@@ -3,6 +3,7 @@ from json import loads
 from json import load
 import os
 from pprint import pformat
+from datetime import datetime
 
 # Third party imports
 from bson import json_util
@@ -113,13 +114,16 @@ class Extended(Document):
     @classmethod
     def get(cls, *args, **kwargs):
         def recursively_query(model, fields, search, root=False):
-            if "__" not in fields:
+            if "___" not in fields:
                 if root:
+                    field = fields.split("__")[0]
+                    if isinstance(getattr(cls, field), DateTimeField):
+                        return {fields: datetime.fromisoformat(search)}
                     return {fields: search}
 
                 return [x.id for x in model.objects(**{fields: search})]
 
-            prop, fields = fields.split("__", 1)
+            prop, fields = fields.split("___", 1)
             result = recursively_query(
                 model._fields[prop].document_type_obj, fields, search
             )
@@ -149,22 +153,6 @@ class Extended(Document):
             pass
 
 
-class Image(Extended):
-    url = StringField()
-    caption = StringField()
-
-
-class Inquiry(Extended):
-    name = StringField()
-    email = StringField()
-    phone_number = StringField()
-    company_name = StringField()
-    job_title = StringField()
-    location = StringField()
-    details = StringField()
-    status = StringField()
-    created_on = StringField()
-
 class Feature(Extended):
     feature = StringField()
     details = StringField()
@@ -177,11 +165,27 @@ class Variant(Extended):
     features = ListField(ReferenceField(Feature))
 
 
+class Image(Extended):
+    url = StringField()
+    caption = StringField()
+
+
 class Product(Extended):
-    name = StringField()
-    detail = StringField()
-    images = ListField(ReferenceField(Image))
+    product = StringField()
     variants = ListField(ReferenceField(Variant))
+    images = ListField(ReferenceField(Variant))
+
+
+class Inquiry(Extended):
+    name = StringField()
+    email = StringField()
+    phone_number = StringField()
+    company_name = StringField()
+    job_title = StringField()
+    location = StringField()
+    details = StringField()
+    status = StringField()
+    created_on = DateTimeField(default=datetime.now)
 
 
 # def config():

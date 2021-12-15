@@ -27,31 +27,6 @@ api = Namespace("api", description="")
 oid = api.model("oid", {"$oid": String})
 base = api.model("base", {"_cls": String, "_id": Nested(oid)})
 
-image = api.clone(
-    "Image",
-    base,
-    {
-        "url": String,
-        "caption": String,
-    },
-)
-
-inquiry = api.clone(
-    "Inquiry",
-    base,
-    {
-        "name": String,
-        "email": String,
-        "phone_number": String,
-        "company_name": String,
-        "job_title": String,
-        "location": String,
-        "details": String,
-        "status": String,
-        "created_on": String
-    },
-)
-
 feature = api.clone(
     "Feature",
     base,
@@ -72,46 +47,44 @@ variant = api.clone(
     },
 )
 
+image = api.clone(
+    "Image",
+    base,
+    {
+        "url": String,
+        "caption": String,
+    },
+)
+
 product = api.clone(
     "Product",
     base,
     {
-        "name": String,
-        "detail": String,
-        "images": List(Nested(image)),
+        "product": String,
+        "variants": List(Nested(variant)),
         "variants": List(Nested(variant)),
     },
 )
 
-
-@api.route("/images")
-class ImagesController(Resource):
-    @api.marshal_list_with(image)
-    def get(self):
-        return models.Image.get(**request.args.to_dict())
-
-    @api.marshal_with(image)
-    def post(self):
-        return models.Image(**request.get_json()).to_json()
-
-    @api.marshal_with(image)
-    def patch(self):
-        return models.Image.set(**request.get_json()).to_json()
-
-
-@api.route("/inquiries")
-class InquiriesController(Resource):
-    @api.marshal_list_with(inquiry)
-    def get(self):
-        return models.Inquiry.get(**request.args.to_dict())
-
-    @api.marshal_with(inquiry)
-    def post(self):
-        return models.Inquiry(**request.get_json()).to_json()
-
-    @api.marshal_with(inquiry)
-    def patch(self):
-        return models.Inquiry.set(**request.get_json()).to_json()
+inquiry = api.clone(
+    "Inquiry",
+    base,
+    {
+        "name": String,
+        "email": String,
+        "phone_number": String,
+        "company_name": String,
+        "job_title": String,
+        "location": String,
+        "details": String,
+        "status": String,
+        "created_on": DateTime(
+            attribute=lambda x: datetime.fromtimestamp(
+                x.get("created_on", {}).get("$date", 0) / 1e3
+            )
+        ),
+    },
+)
 
 
 @api.route("/features")
@@ -128,6 +101,9 @@ class FeaturesController(Resource):
     def patch(self):
         return models.Feature.set(**request.get_json()).to_json()
 
+    def delete(self):
+        models.Feature.objects(id=request.args["_id"]["$oid"])
+
 
 @api.route("/variants")
 class VariantsController(Resource):
@@ -142,6 +118,27 @@ class VariantsController(Resource):
     @api.marshal_with(variant)
     def patch(self):
         return models.Variant.set(**request.get_json()).to_json()
+
+    def delete(self):
+        models.Variant.objects(id=request.args["_id"]["$oid"])
+
+
+@api.route("/images")
+class ImagesController(Resource):
+    @api.marshal_list_with(image)
+    def get(self):
+        return models.Image.get(**request.args.to_dict())
+
+    @api.marshal_with(image)
+    def post(self):
+        return models.Image(**request.get_json()).to_json()
+
+    @api.marshal_with(image)
+    def patch(self):
+        return models.Image.set(**request.get_json()).to_json()
+
+    def delete(self):
+        models.Image.objects(id=request.args["_id"]["$oid"])
 
 
 @api.route("/products")
@@ -159,5 +156,22 @@ class ProductsController(Resource):
         return models.Product.set(**request.get_json()).to_json()
 
     def delete(self):
-        item = models.Product(id=request.get_json()["_id"]["$oid"])
-        item.delete()
+        models.Product.objects(id=request.args["_id"]["$oid"])
+
+
+@api.route("/inquiries")
+class InquiriesController(Resource):
+    @api.marshal_list_with(inquiry)
+    def get(self):
+        return models.Inquiry.get(**request.args.to_dict())
+
+    @api.marshal_with(inquiry)
+    def post(self):
+        return models.Inquiry(**request.get_json()).to_json()
+
+    @api.marshal_with(inquiry)
+    def patch(self):
+        return models.Inquiry.set(**request.get_json()).to_json()
+
+    def delete(self):
+        models.Inquiry.objects(id=request.args["_id"]["$oid"])
