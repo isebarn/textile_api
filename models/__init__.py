@@ -171,7 +171,8 @@ class Image(Extended):
 
 
 class Product(Extended):
-    product = StringField()
+    name = StringField()
+    detail = StringField()
     variants = ListField(ReferenceField(Variant))
     images = ListField(ReferenceField(Variant))
 
