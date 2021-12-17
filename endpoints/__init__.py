@@ -103,7 +103,7 @@ class FeaturesController(Resource):
         return models.Feature.set(**request.get_json()).to_json()
 
     def delete(self):
-        models.Feature.objects(id=request.args["_id"]["$oid"])
+        models.Feature.objects(id=request.args.get("_id")).delete()
 
 
 @api.route("/variants")
@@ -121,7 +121,7 @@ class VariantsController(Resource):
         return models.Variant.set(**request.get_json()).to_json()
 
     def delete(self):
-        models.Variant.objects(id=request.args["_id"]["$oid"])
+        models.Variant.objects(id=request.args.get("_id")).delete()
 
 
 @api.route("/images")
@@ -139,7 +139,7 @@ class ImagesController(Resource):
         return models.Image.set(**request.get_json()).to_json()
 
     def delete(self):
-        models.Image.objects(id=request.args["_id"]["$oid"])
+        models.Image.objects(id=request.args.get("_id")).delete()
 
 
 @api.route("/products")
@@ -157,7 +157,7 @@ class ProductsController(Resource):
         return models.Product.set(**request.get_json()).to_json()
 
     def delete(self):
-        models.Product.objects(id=request.args["_id"]["$oid"])
+        models.Product.objects(id=request.args.get("_id")).delete()
 
 
 @api.route("/inquiries")
@@ -175,4 +175,4 @@ class InquiriesController(Resource):
         return models.Inquiry.set(**request.get_json()).to_json()
 
     def delete(self):
-        models.Inquiry.objects(id=request.args["_id"]["$oid"])
+        models.Inquiry.objects(id=request.args.get("_id")).delete()
