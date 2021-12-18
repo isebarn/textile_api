@@ -162,7 +162,7 @@ class Variant(Extended):
     name = StringField()
     item_description_line_1 = StringField()
     item_description_line_2 = StringField()
-    features = ListField(ReferenceField(Feature))
+    features = ListField(ReferenceField(Feature, reverse_delete_rule=4))
 
 
 class Image(Extended):
@@ -173,8 +173,8 @@ class Image(Extended):
 class Product(Extended):
     name = StringField()
     detail = StringField()
-    variants = ListField(ReferenceField(Variant))
-    images = ListField(ReferenceField(Variant))
+    variants = ListField(ReferenceField(Variant, reverse_delete_rule=4))
+    images = ListField(ReferenceField(Variant, reverse_delete_rule=4))
 
 
 class Inquiry(Extended):
