@@ -63,7 +63,7 @@ product = api.clone(
         "name": String,
         "detail": String,
         "variants": List(Nested(variant)),
-        "variants": List(Nested(variant)),
+        "images": List(Nested(image)),
     },
 )
 

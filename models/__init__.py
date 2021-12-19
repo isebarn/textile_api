@@ -174,7 +174,7 @@ class Product(Extended):
     name = StringField()
     detail = StringField()
     variants = ListField(ReferenceField(Variant, reverse_delete_rule=4))
-    images = ListField(ReferenceField(Variant, reverse_delete_rule=4))
+    images = ListField(ReferenceField(Image, reverse_delete_rule=4))
 
 
 class Inquiry(Extended):
